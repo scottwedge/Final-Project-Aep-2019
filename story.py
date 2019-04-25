@@ -24,11 +24,16 @@ def start_story():
 	
 
 @app.route('/story/list', methods=["GET"])
-def list_stories():
-	resp = Response(json.dumps(df.to_dict()), status=200, mimetype='application/json')
+def list_stories_titles():
+	resp = Response(json.dumps(df['title'].to_dict()), status=200, mimetype='application/json')
 	return resp
 
-# @app.route('/story/<title>')
+@app.route('/story/<title>')
+def display_story(title):
+	row = df.loc[df['title'] == title]
+	resp = Response(json.dumps(row.to_dict()), status=200, mimetype='application/json')
+	return resp
+
 
 # @app.route('story/<title>/edit')
 

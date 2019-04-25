@@ -17,6 +17,11 @@ class TestStory(unittest.TestCase):
         def test_b_list_story(self):
                 resp = self.client.get(path='/story/list', content_type='application/json')
                 self.assertEqual(resp.status_code, 200)
+                self.assertEqual(resp.json, {'0': 'ABC'})
+
+        def test_c_display_story(self):
+                resp = self.client.get(path='/story/ABC', content_type='application/json')
+                self.assertEqual(resp.status_code, 200)
                 self.assertEqual(resp.json, {'title': {'0': 'ABC'}, 'text': {'0': "Blah"}, 'current_user': {'0': 1}, "state": {'0': 1}})
 
 
