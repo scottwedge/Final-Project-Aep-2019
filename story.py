@@ -16,15 +16,17 @@ def start_story():
 		text = arguments.get("text")
 		current_user = arguments.get("current_user")
 		state = arguments.get("state")
-		
-	df.loc[len(df)] = [title, text, current_user, state]
 
+	df.loc[len(df)] = [title, text, current_user, state]
+		
 	resp = Response(json.dumps({ "title": title }), status=201, mimetype='application/json')
 	return resp
+	
 
-
-
-# @app.route('/story/list')
+@app.route('/story/list', methods=["GET"])
+def list_stories():
+	resp = Response(json.dumps(df.to_dict()), status=200, mimetype='application/json')
+	return resp
 
 # @app.route('/story/<title>')
 
