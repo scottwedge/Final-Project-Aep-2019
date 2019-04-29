@@ -30,7 +30,7 @@ def list_stories_titles():
 	resp = Response(df['title'].to_json(), status=200, mimetype='application/json')
 	return resp
 
-@app.route('/story/<title>')
+@app.route('/story/<title>', methods=["GET"])
 def display_story(title):
 	row = df.loc[df['title'] == title]
 	resp = Response(row.to_json(), status=200, mimetype='application/json')
@@ -48,6 +48,8 @@ def edit_story(title):
 		new_text = arguments.get("new_text")
 		current_user = arguments.get("current_user")
 		state = arguments.get("state")
+
+
 
 	old_text = row['text']
 
@@ -81,5 +83,12 @@ def end_story(title):
 	row = df.loc[df['title'] == title, 'state']
 	resp = Response(row.to_json(), status=201, mimetype='application/json')
 	return resp
+
+@app.route('/story/<title>/users', methods=["GET"])
+def list_story_users(title):
+	users = df_user.loc[df_user.title==title, ['title', 'user']]
+	resp = Response(users.to_json(), status=200, mimetype='application/json')
+	return resp
+
 
 # @app.route('/story/<title>/leave')
