@@ -25,18 +25,37 @@ def start_story():
 
 @app.route('/story/list', methods=["GET"])
 def list_stories_titles():
-	resp = Response(json.dumps(df['title'].to_dict()), status=200, mimetype='application/json')
+	resp = Response(df['title'].to_json(), status=200, mimetype='application/json')
 	return resp
 
 @app.route('/story/<title>')
 def display_story(title):
 	row = df.loc[df['title'] == title]
-	resp = Response(json.dumps(row.to_dict()), status=200, mimetype='application/json')
+	resp = Response(row.to_json(), status=200, mimetype='application/json')
 	return resp
 
 
-# @app.route('story/<title>/edit')
+@app.route('/story/<title>/edit', methods=["PUT"])
+def edit_story(title):
 
-# @app.route('story/<title>/end')
+	row = df.loc[df['title'] == title]
 
-# @app.route('story/<title>/leave')
+	if request.headers['Content-Type'] == 'application/json':
+		arguments = request.get_json()
+		title = arguments.get("title")
+		new_text = arguments.get("new_text")
+		current_user = arguments.get("current_user")
+		state = arguments.get("state")
+
+	old_text = row['text']
+	text = old_text + new_text
+	df.loc[df.title==title, ['text', 'current_user', 'state']] = [text, current_user, state]
+	row = df.loc[df['title'] == title]
+	
+	resp = Response(row.to_json(), status=201, mimetype='application/json')
+	return resp
+
+# @app.route('/story/<title>/end', methods=["PUT"])
+
+
+# @app.route('/story/<title>/leave')
