@@ -25,10 +25,16 @@ class TestStory(unittest.TestCase):
                 self.assertEqual(resp.json, {'title': {'0': 'ABC'}, 'text': {'0': "First sentence."}, 'current_user': {'0': 1}, "state": {'0': 1}})
 
         def test_d_edit_story(self):
-                data = {"title": "ABC", "new_text": " Second sentence.", "current_user": 2, "state": 1}
+                data = {"title": "ABC", "new_text": " Second sentence.", "current_user": 1, "state": 1}
                 resp = self.client.put(path='/story/ABC/edit', data=json.dumps(data), content_type='application/json')
                 self.assertEqual(resp.status_code, 201)
-                self.assertEqual(resp.json, {'title': {'0': 'ABC'}, 'text': {'0': {'0': "First sentence. Second sentence."}}, 'current_user': {'0': 2}, "state": {'0': 1}})
+                self.assertEqual(resp.json, {'title': {'0': 'ABC'}, 'text': {'0': {'0': "First sentence. Second sentence."}}, 'current_user': {'0': 1}, "state": {'0': 1}})
+
+        def test_e_end_story(self):
+                resp = self.client.put(path='/story/ABC/end', content_type='application/json')
+                self.assertEqual(resp.status_code, 201)
+                self.assertEqual(resp.json, {'title': {'0': 'ABC'}, 'text': {'0': {'0': "First sentence. Second sentence."}}, 'current_user': {'0': 1}, "state": {'0': 0}})
+
                 
 
 
