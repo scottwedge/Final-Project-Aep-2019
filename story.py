@@ -1,5 +1,4 @@
 from flask import Flask, request, Response
-import language_check
 import json
 from grammarbot import GrammarBotClient
 
