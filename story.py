@@ -1,5 +1,7 @@
 from flask import Flask, request, Response
+import language_check
 import json
+from grammarbot import GrammarBotClient
 
 import pandas as pd
 
@@ -19,9 +21,13 @@ def start_story():
 		current_user = arguments.get("current_user")
 		state = arguments.get("state")
 
-	df.loc[len(df)] = [title, text, current_user, state]
-	df_user.loc[len(df_user)] = [title, current_user]
-	resp = Response(json.dumps({ "title": title }), status=201, mimetype='application/json')
+	if check_grammar_bot(text)==True:
+		df.loc[len(df)] = [title, text, current_user, state]
+		df_user.loc[len(df_user)] = [title, current_user]
+		resp = Response(json.dumps({ "title": title }), status=201, mimetype='application/json')
+		return resp
+
+	resp = Response(json.dumps({ "Error": "Wrong grammar." }), status=404, mimetype='application/json')
 	return resp
 	
 
@@ -104,3 +110,11 @@ def leave_story(title):
 
 	resp = Response(status=201, mimetype='application/json')
 	return resp
+	
+
+def check_grammar_bot(text):
+	client = GrammarBotClient()
+	res = client.check(text, 'en-US')
+	if len(res.matches)==0:
+		return True
+	return False

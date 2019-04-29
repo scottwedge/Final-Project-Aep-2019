@@ -9,6 +9,7 @@ class TestStory(unittest.TestCase):
                 self.client = self.app.test_client()
                 self.story1 = {"title": "ABC", "text": "First sentence.", "current_user": 1, "state": 1}
                 self.story2 = {"title": "Greetings", "text": "Good morning.", "current_user": 1, "state": 1}
+                self.story3 = {"title": "Emotions", "text": "I cant remember how to go their", "current_user": 1, "state": 1}
 
         def test_a_start_story1(self):
                 resp = self.client.post(path='/story/start', data=json.dumps(self.story1), content_type='application/json')
@@ -77,6 +78,11 @@ class TestStory(unittest.TestCase):
                 resp = self.client.get(path='/story/Greetings/activeusers', content_type='application/json')
                 self.assertEqual(resp.status_code, 200)
                 self.assertEqual(resp.json, {'title': {'3': 'Greetings'}, 'user': {'3': 3}})
+
+        def test_n_start_story3(self):
+                resp = self.client.post(path='/story/start', data=json.dumps(self.story3), content_type='application/json')
+                self.assertEqual(resp.status_code, 404)
+                self.assertEqual(resp.json, { "Error": "Wrong grammar." })
                 
 
 
