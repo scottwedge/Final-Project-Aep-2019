@@ -7,6 +7,8 @@ app = Flask(__name__)
 
 columns = ['title', 'text', 'current_user', 'state']
 df = pd.DataFrame(columns=columns)
+columns2 = ['title', 'user']
+df_user = pd.DataFrame(columns=columns2)
 
 @app.route('/story/start', methods=["POST"])
 def start_story():
@@ -18,7 +20,7 @@ def start_story():
 		state = arguments.get("state")
 
 	df.loc[len(df)] = [title, text, current_user, state]
-		
+	df_user.loc[len(df_user)] = [title, current_user]
 	resp = Response(json.dumps({ "title": title }), status=201, mimetype='application/json')
 	return resp
 	
@@ -54,7 +56,9 @@ def edit_story(title):
 	# df.replace({'text' : { old_text : text}}, {'current_user': {}})
 
 	df.loc[df.title==title, ['text', 'current_user', 'state']] = [text, current_user, state] #this causes the object type series not json serializable problem
-
+	
+	if current_user not in df_user.loc[df_user.title==title, 'user'].unique():
+		df_user.loc[len(df_user)] = [title, current_user]
 	# row = [text, current_user, state]
 # 
 	# df2 = pd.DataFrame({'title': title, 'text': text, 'current_user': current_user, 'state': state}, index=[0])
@@ -64,7 +68,7 @@ def edit_story(title):
 
 	# new_row = df.loc[df['title']==title]
 
-	row = df.loc[df['title'] == title]
+	row = df.loc[df['title'] == title, ['text', 'current_user']]
 	
 	resp = Response(row.to_json(), status=201, mimetype='application/json')
 	# resp = Response(row.to_json(), status=201, mimetype='application/json')
@@ -73,8 +77,8 @@ def edit_story(title):
 @app.route('/story/<title>/end', methods=["PUT"])
 def end_story(title):
 	
-	df.loc[df.title==title, ['state']] = 0
-	row = df.loc[df['title'] == title]
+	df.loc[df.title==title, 'state'] = 0
+	row = df.loc[df['title'] == title, 'state']
 	resp = Response(row.to_json(), status=201, mimetype='application/json')
 	return resp
 
