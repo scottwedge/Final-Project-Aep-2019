@@ -59,15 +59,24 @@ class TestStory(unittest.TestCase):
                 self.assertEqual(resp.json, {'0': 'ABC', '1': 'Greetings'})
 
         def test_j_display_story1_users(self):
-                resp = self.client.get(path='/story/ABC/users', content_type='application/json')
+                resp = self.client.get(path='/story/ABC/activeusers', content_type='application/json')
                 self.assertEqual(resp.status_code, 200)
                 self.assertEqual(resp.json, {'title': {'0': 'ABC', '1': 'ABC'}, 'user': {'0': 1, '1': 2}})
 
         def test_k_display_story2_users(self):
-                resp = self.client.get(path='/story/Greetings/users', content_type='application/json')
+                resp = self.client.get(path='/story/Greetings/activeusers', content_type='application/json')
                 self.assertEqual(resp.status_code, 200)
                 self.assertEqual(resp.json, {'title': {'2': 'Greetings', '3': 'Greetings'}, 'user': {'2': 1, '3': 3}})
 
+        def test_l_leave_story2(self):
+                data = {"title": "Greetings", "user": 1}
+                resp = self.client.post(path='/story/Greetings/leave', data=json.dumps(data), content_type='application/json')
+                self.assertEqual(resp.status_code, 201)
+
+        def test_m_display_story2_users_after_user1_leaves(self):
+                resp = self.client.get(path='/story/Greetings/activeusers', content_type='application/json')
+                self.assertEqual(resp.status_code, 200)
+                self.assertEqual(resp.json, {'title': {'3': 'Greetings'}, 'user': {'3': 3}})
                 
 
 

@@ -84,11 +84,23 @@ def end_story(title):
 	resp = Response(row.to_json(), status=201, mimetype='application/json')
 	return resp
 
-@app.route('/story/<title>/users', methods=["GET"])
-def list_story_users(title):
+@app.route('/story/<title>/activeusers', methods=["GET"])
+def list_story_activeusers(title):
 	users = df_user.loc[df_user.title==title, ['title', 'user']]
 	resp = Response(users.to_json(), status=200, mimetype='application/json')
 	return resp
 
 
-# @app.route('/story/<title>/leave')
+@app.route('/story/<title>/leave', methods=["POST"])
+def leave_story(title):
+
+	if request.headers['Content-Type'] == 'application/json':
+		arguments = request.get_json()
+		title = arguments.get("title")
+		user = arguments.get("user")
+
+	i = df_user[((df_user.title == title) & (df_user.user == user))].index
+	df_user.drop(i, inplace=True)
+
+	resp = Response(status=201, mimetype='application/json')
+	return resp
